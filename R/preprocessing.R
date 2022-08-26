@@ -76,7 +76,7 @@ IntensitiesUsed <- function(spectra3){
 
 
 #### Data ####
-input_files_names <- list.files(path = '.', pattern= '*.csv', recursive=TRUE)
+input_files_names <- list.files(path = './', pattern= '*.csv', recursive=TRUE)
 #input_files <- lapply(input_files_names, read.csv, header = TRUE, skip = 1, sep = ",")
 
 #extract energy value from column name, starting with column 2
@@ -135,18 +135,23 @@ SY50 <- SYEstimates[3]
 SY50
 
 #library("investr")
-xvals=seq(min(x),max(x),length.out=100)
+xvals=seq(min(x),max(x),length.out=200)
 predintervals = data.frame(x=xvals,predFit(nlslmfit, newdata=data.frame(x=xvals), interval="prediction"))
 confintervals = data.frame(x=xvals,predFit(nlslmfit, newdata=data.frame(x=xvals), interval="confidence"))
 
+predSY50Y <- data.frame(x=SY50,predFit(nlslmfit, newdata=data.frame(x=SY50), interval="prediction"))
+SY50Y <- predSY50Y[,2]
+SY50Y
 #SYCurve
 ggplot(data=predintervals, x=x, y=fit, ymin=lwr, ymax=upr, geom="ribbon", fill=I("red"), alpha=I(0.2)) +
   geom_ribbon(data=confintervals, aes(x=x, ymin=lwr, ymax=upr), fill=I("blue"), alpha=I(0.2)) +
   geom_line(data=confintervals, aes(x=x, y=fit), colour=I("blue"), lwd=1) +
   geom_point(data=abetaCu, aes(x=x, y=y, ymin=NULL, ymax=NULL), size=3) +
   ylab("SY Percent") + xlab("Energy") +
-  geom_point(aes(SY50, 0.5))
+  geom_point(aes(SY50, SY50Y), col="red", size=3)
 #trying to indicate SY50 on each line
+
+
 
 #Then store every SY50 and SY50curve plots for every file in a table
 
