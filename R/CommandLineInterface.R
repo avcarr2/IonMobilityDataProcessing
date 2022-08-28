@@ -1,15 +1,17 @@
+source("R/main.R")
+
 ## User Interface ## 
 option_list <- 
   list(
     make_option(
       c("-i", "--inputfolder"), 
       type = "character", 
-      default = NULL, 
+      default = getwd(), 
       help = "Input folder path [default = %default"), 
     make_option(
       c("-o", "--outputfolder"), 
       type = "character", 
-      default = NULL, 
+      default = file.path(getwd(), "Data"), 
       help = "Output folder path [deafult = %default]"
     ), 
     make_option(
@@ -32,12 +34,11 @@ if(is.null(opt$inputfolder) | is.null(opt$outputfolder)){
   print_help(optParser)
   stop("Must have input and output folder arguments")
 }
+## FOR TESTING PURPOSES. REMOVE FOR REAL THING ## 
+opt$inputfolder <- file.path(getwd(), "Data")
 
 ## Enter main function 
-
-
-## Parameters: min_Mz, max_Mz, input folder, output folder
-
-## Run workflow loop
-
-## Return list of reports in output folder 
+main(opt$inputfolder, 
+     opt$outputfolder, 
+     minMz = opt$minmz, 
+     maxMz = opt$maxmz)
