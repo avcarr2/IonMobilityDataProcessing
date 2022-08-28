@@ -1,5 +1,6 @@
-source("R/functions.R")
-source("R/OnLoad.R")
+source("./R/functions.R")
+source("./R/CombinedSYPlot.R")
+
 main <- function(inputFolder, outputFolder, minMz, maxMz){
   
   ## Get vector of file names
@@ -77,14 +78,41 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
     SY50Y <- predSY50Y[,2]
     SY50Y
     #SYCurve
-    ggplot(data=predintervals, x=x, y=fit, 
+    ggplot2::ggplot(data=predintervals, x=x, y=fit, 
            ymin=lwr, ymax=upr, 
            geom="ribbon", fill=I("red"), alpha=I(0.2)) +
-      geom_ribbon(data=confintervals, aes(x=x, ymin=lwr, ymax=upr), fill=I("blue"), alpha=I(0.2)) +
-      geom_line(data=confintervals, aes(x=x, y=fit), colour=I("blue"), lwd=1) +
-      geom_point(data=outputPercentValTable, aes(x=x, y=y, ymin=NULL, ymax=NULL), size=3) +
-      ylab("SY Percent") + xlab("Energy") +
-      geom_point(aes(SY50, SY50Y), col="red", size=3)
-    ggsave(filename = file.path(folder_paths[i], "SYPlot.png"))
+      ggplot2::geom_ribbon(data=confintervals, 
+                           ggplot2::aes(x=x, ymin=lwr, ymax=upr), 
+                           fill=I("blue"), 
+                           alpha=I(0.2)) +
+      ggplot2::geom_line(data=confintervals, 
+                         ggplot2::aes(x=x, y=fit), 
+                         colour=I("blue"), 
+                         lwd=1) +
+      ggplot2::geom_point(data=outputPercentValTable, 
+                          ggplot2::aes(x=x, y=y, ymin=NULL, ymax=NULL), 
+                          size=3) +
+      ggplot2::ylab("SY Percent") + 
+      ggplot2::xlab("Energy") +
+      ggplot2::geom_point(ggplot2::aes(SY50, SY50Y), col="red", size=3)
+    ggplot2::ggsave(filename = file.path(folder_paths[i], "SYPlot.svg"), device = "svg")
+    
+    tempResult[[3]] <- confintervals
+    tempResult[[4]] <- predintervals
+    tempResult[[5]] <- SY50Y
+    
+    outputList[[i]] <- tempResult
   }
+  ## Add SY Plot for all the elements of the output list
+  ## tempResult has: 
+  ## 1) the Energy vs Percent Output Table
+  ## 2) The SY50 Value
+  ## 3) confinIntervals
+  ## 4) PredictedIntervals
+  ## 5) Predicted SY50
+  combinedPlot <- CombinedSYPlot$new()
+  lapply(outputList, function(x) combinedPlot$AddSyPlotElement(x))
+  combinedPlot$ApplyTheme()
+  combinedPlot$SavePlot(outputFolder)
+  
 }
