@@ -18,39 +18,40 @@ CombinedSYPlot <- R6::R6Class(
       SY50Y <- listElement$PredSY50
       
       self$gPlot <- 
-        self$gPlot +
-            ggplot2::geom_ribbon(data = PredIntervals, 
-                                 ggplot2::aes(x = `x`, 
-                                              y = `fit`, 
-                                              ymin = `lwr`, 
-                                              ymax = `upr`), 
-                                 fill = I("red"), 
-                                 alpha = I(0.2)) +   
-          ggplot2::geom_ribbon(data = ConfidIntervals, 
+        ggplot2::`%+%`(self$gPlot, list(
+          ggplot2::geom_ribbon(data = PredIntervals, 
                                ggplot2::aes(x = `x`, 
+                                            y = `fit`, 
                                             ymin = `lwr`, 
                                             ymax = `upr`), 
-                               fill = I("blue"), 
-                               alpha = I(0.2)) + 
-          ggplot2::geom_line(data = ConfidIntervals, 
-                             ggplot2::aes(x = `x`, 
-                                          y = `fit`), 
-                             colour = I("blue"), 
-                             lwd = 1) +
-          ggplot2::geom_point(data = SyData, 
-                              ggplot2::aes(x = `x`, 
-                                           y = `fit`), 
-                              size = 3) +   
-          ggplot2::geom_point(ggplot2::aes(x = SY50, 
-                                           y = SY50Y), 
-                              col = "red", size = 3)
-      invisible(self$gPlot)
+                               fill = I("red"), 
+                               alpha = I(0.2)), 
+            ggplot2::geom_ribbon(data = ConfidIntervals, 
+                                 ggplot2::aes(x = `x`, 
+                                              ymin = `lwr`, 
+                                              ymax = `upr`), 
+                                 fill = I("blue"), 
+                                 alpha = I(0.2)),  
+            ggplot2::geom_line(data = ConfidIntervals, 
+                               ggplot2::aes(x = `x`, 
+                                            y = `fit`), 
+                               colour = I("blue"), 
+                               lwd = 1), 
+            ggplot2::geom_point(data = SyData, 
+                                ggplot2::aes(x = `EnergyVals`, 
+                                             y = `PercentVals`), 
+                                size = 3),   
+            ggplot2::geom_point(ggplot2::aes(x = SY50, 
+                                             y = SY50Y), 
+                                col = "red", size = 3)
+        ))
+        invisible(self$gPlot)
       }, 
     
     AddPlot = function(singleElement){
       self$gPlot <- 
         self$gPlot %+%
-        ggplot2::geom_point(data = singleElement, mapping = aes(x = x, y = fit))
+        ggplot2::geom_point(data = singleElement, mapping = aes(x = x, y = y))
     }, 
     
     ApplyTheme = function(...){
