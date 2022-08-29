@@ -16,7 +16,7 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
   
   for(i in 1:length(input_file_names)){
     ## Create output directory folder
-    tempResult <- list()
+    outputList[[i]] <- list()
     csv <- read.csv(file = file.path(inputFolder, input_file_names[i]),
                     skip = 1)
     namesCsv <- colnames(csv)[-1]
@@ -47,7 +47,7 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
     outputPercentValTable <- data.frame(EnergyVals, PercentVals)
     x <- EnergyVals
     y <- PercentVals
-    tempResult[[1]] <- outputPercentValTable
+    
     
 
     nlslmfit <- minpack.lm::nlsLM(y ~ M_4pl(x, lower.asymp, upper.asymp, inflec, hill),
@@ -62,7 +62,6 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
     #store inflection point as SY50
     SYEstimates <- nlslmfit$m$getAllPars()
     SY50 <- SYEstimates[3]
-    tempResult[[2]] <- SY50
     
     #library("investr")
     xvals=seq(min(x),max(x),length.out=200)
@@ -95,13 +94,14 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
       ggplot2::ylab("SY Percent") + 
       ggplot2::xlab("Energy") +
       ggplot2::geom_point(ggplot2::aes(SY50, SY50Y), col="red", size=3)
-    ggplot2::ggsave(filename = file.path(folder_paths[i], "SYPlot.svg"), device = "svg")
+    ggplot2::ggsave(filename = file.path(folder_paths[i], "SYPlot.pdf"), device = "pdf")
     
-    tempResult[[3]] <- confintervals
-    tempResult[[4]] <- predintervals
-    tempResult[[5]] <- SY50Y
+    outputList[[i]] <- list(EnergyVPercent = outputPercentValTable, 
+                            Sy50 = SY50, 
+                            ConfInt = confintervals, 
+                            PredInt = predintervals, 
+                            PredSY50 = SY50Y)
     
-    outputList[[i]] <- tempResult
   }
   ## Add SY Plot for all the elements of the output list
   ## tempResult has: 
@@ -110,9 +110,10 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
   ## 3) confinIntervals
   ## 4) PredictedIntervals
   ## 5) Predicted SY50
-  combinedPlot <- CombinedSYPlot$new()
-  lapply(outputList, function(x) combinedPlot$AddSyPlotElement(x))
+  combinedPlot <<- CombinedSYPlot$new()
+  for(k in seq_along(outputList)){
+    combinedPlot$AddSyPlotElement(outputList[[i]])
+  }
   combinedPlot$ApplyTheme()
   combinedPlot$SavePlot(outputFolder)
-  
 }

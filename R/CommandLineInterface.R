@@ -42,9 +42,9 @@ if(is.null(opt$inputfolder) | is.null(opt$outputfolder)){
   print_help(optParser)
   stop("Must have input and output folder arguments")
 }
-## FOR TESTING PURPOSES. REMOVE FOR REAL THING ## 
 setwd(opt$PathToRCode)
 source("./R/main.R")
+source("./R/CombinedSYPlot.R")
 ## Enter main function 
 main(opt$inputfolder, 
      opt$outputfolder, 
