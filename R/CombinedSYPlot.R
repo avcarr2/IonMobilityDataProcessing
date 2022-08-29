@@ -71,8 +71,8 @@ CombinedSYPlot <- R6::R6Class(
     
     SavePlot = function(filePath){
       ggplot2::ggsave(self$gPlot,
-        filename = file.path(filePath, "Combined_SYPlot.png"), 
-        device = "png")
+        filename = file.path(filePath, "Combined_SYPlot.pdf"), 
+        device = "pdf")
     }
   )
 )
