@@ -2,12 +2,13 @@ source("./R/functions.R")
 source("./R/CombinedSYPlot.R")
 source("./R/writeSy50.R")
 source("./R/writeSYTables.R")
+source("./R/trimNames.R")
 
 main <- function(inputFolder, outputFolder, minMz, maxMz){
   
   ## Get vector of file names
   input_file_names <- list.files(path = inputFolder, pattern= '*.csv', recursive=TRUE)
-  folder_names  <- tools::file_path_sans_ext(basename(input_file_names)) 
+  folder_names  <- trimNames(tools::file_path_sans_ext(basename(input_file_names))) 
   folder_paths <- file.path(outputFolder, folder_names)
   lapply(folder_paths, dir.create)
   
@@ -113,6 +114,10 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
             outputFolderPath = outputFolder)
   writeSYTables(outputList = outputList, fileNames = folder_names, 
                 outputFolderPath = outputFolder)
+  writePredTables(outputList = outputList, fileNames = folder_names, 
+                  outputFolderPath = outputFolder)
+  writeConfidTables(outputList = outputList, fileNames = folder_names, outputFolderPath = outputFolder)
+  
   ## Add SY Plot for all the elements of the output list
   ## tempResult has: 
   ## 1) the Energy vs Percent Output Table
