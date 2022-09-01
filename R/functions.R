@@ -65,9 +65,26 @@ calcSY <- function(spectra3, minMz, maxMz){
   #intensity of all fragments
   totalfrag <- MALDIquant::totalIonCurrent(spectraMod)
   #intensity of original peak of interest
-  abetacu <- MALDIquant::totalIonCurrent(MALDIquant::trim(spectraMod, c(minMz,maxMz)))
+  abetacu <- MALDIquant::totalIonCurrent(MALDIquant::trim(spectraMod, c(minMz, maxMz)))
   #calculate survival yield
   SY <<- abetacu/totalfrag
+  return(SY)
+}
+calcratio <- function(spectra3, minMz, maxMz){
+  # use spectra3 to get 2 values. 1 for total signal, then other for just defined range
+  # if above noise, add, if not, ignore. maybe noise 1 or 2. but then it wont count the first few peak areas
+  # then do s/n cutoff of 3. #noise[row1,column2]*s/n
+  cutoff <- noise[1,2]*5
+  # replace any value below s/n threshold with 0
+  MALDIquant::intensity(spectra3)[MALDIquant::intensity(spectra3) <= cutoff] <- 0
+  spectraMod <<- spectra3
+  #intensity of all fragments
+  totalfrag <- MALDIquant::totalIonCurrent(spectraMod)
+  #intensity of original peak of interest
+  abetacu <- MALDIquant::totalIonCurrent(MALDIquant::trim(spectraMod, c(minMz,maxMz)))
+  abeta <- MALDIquant::totalIonCurrent((MALDIquant::trim(spectraMod, c(597,599))))
+  #calculate survival yield
+  ratio <<- abeta/abetacu
   return(SY)
 }
 M_4pl <- function(x, lower.asymp, upper.asymp, inflec, hill){
