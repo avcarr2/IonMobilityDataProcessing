@@ -114,6 +114,10 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
             outputFolderPath = outputFolder)
   writeSYTables(outputList = outputList, fileNames = folder_names, 
                 outputFolderPath = outputFolder)
+  writePredTables(outputList = outputList, fileNames = folder_names, 
+                  outputFolderPath = outputFolder)
+  writeConfidTables(outputList = outputList, fileNames = folder_names, outputFolderPath = outputFolder)
+  
   ## Add SY Plot for all the elements of the output list
   ## tempResult has: 
   ## 1) the Energy vs Percent Output Table

@@ -9,3 +9,5 @@ writeSy50 <- function(outputList, fileNames, outputFolderPath){
             file = paste0(file.path(outputFolderPath, "Sy50ValuesData.csv")))
 }
 
+
+
