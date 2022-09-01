@@ -42,7 +42,7 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
       plot3 <- plotBaselineFunction(spectra2, outputFilePath = final_path)
       plot4 <- plotSNFunction(spectra3, outputFilePath = final_path)
       
-      PercentVals[j] <- calcSY(spectra3)
+      PercentVals[j] <- calcSY(spectra3, minMz, maxMz)
       plot5 <- IntensitiesUsed(spectra3, outputFilePath = final_path)
     }
     
