@@ -8,7 +8,7 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
   
   ## Get vector of file names
   input_file_names <- list.files(path = inputFolder, pattern= '*.csv', recursive=TRUE)
-  folder_names  <- tools::file_path_sans_ext(basename(input_file_names)) 
+  folder_names  <- trimNames(tools::file_path_sans_ext(basename(input_file_names))) 
   folder_paths <- file.path(outputFolder, folder_names)
   lapply(folder_paths, dir.create)
   
