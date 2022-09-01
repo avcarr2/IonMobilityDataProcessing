@@ -69,10 +69,10 @@ CombinedSYPlot <- R6::R6Class(
       invisible(self$gPlot)
     }, 
     
-    SavePlot = function(filePath){
+    SavePlot = function(filePath, folderName){
       ggplot2::ggsave(self$gPlot,
-        filename = file.path(filePath, "Combined_SYPlot.pdf"), 
-        device = "pdf")
+        filename = file.path(filePath, 
+        device = "pdf"))
     }
   )
 )

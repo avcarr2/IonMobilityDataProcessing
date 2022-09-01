@@ -1,5 +1,7 @@
 source("./R/functions.R")
 source("./R/CombinedSYPlot.R")
+source("./R/writeSy50.R")
+source("./R/writeSYTables.R")
 
 main <- function(inputFolder, outputFolder, minMz, maxMz){
   
@@ -103,6 +105,14 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
                             PredSY50 = SY50Y)
     
   }
+  #### Write the Excel sheet and csv containing data
+  ## use output list and foldernames to get the file paths for writing SY50 and 
+  ## Excel sheet 
+  
+  writeSy50(outputList = outputList, fileNames = folder_names, 
+            outputFolderPath = outputFolder)
+  writeSYTables(outputList = outputList, fileNames = folder_names, 
+                outputFolderPath = outputFolder)
   ## Add SY Plot for all the elements of the output list
   ## tempResult has: 
   ## 1) the Energy vs Percent Output Table
@@ -110,44 +120,56 @@ main <- function(inputFolder, outputFolder, minMz, maxMz){
   ## 3) confinIntervals
   ## 4) PredictedIntervals
   ## 5) Predicted SY50
-  p <- ggplot2::ggplot()
-  for(k in seq_along(outputList)){
-    SyData <- outputList[[k]]$EnergyVPercent
-    SY50 <- outputList[[k]]$Sy50
-    ConfidIntervals <- outputList[[k]]$ConfInt
-    PredIntervals <- outputList[[k]]$PredInt
-    SY50Y <- outputList[[k]]$PredSY50
-    p <- 
-        ggplot2::`%+%`(p, list(
-          ggplot2::geom_ribbon(data = PredIntervals, 
-                               ggplot2::aes(x = PredIntervals$x, 
-                                            y = PredIntervals$fit, 
-                                            ymin = PredIntervals$lwr, 
-                                            ymax = PredIntervals$upr), 
-                               fill = I("red"), 
-                               alpha = I(0.2)), 
-          ggplot2::geom_ribbon(data = ConfidIntervals, 
+  
+  tryCatch(
+    {
+      combinedPlot <- combinedSYPlot$new()
+      p <- ggplot2::ggplot()
+      for(k in seq_along(outputList)){
+        SyData <- outputList[[k]]$EnergyVPercent
+        SY50 <- outputList[[k]]$Sy50
+        ConfidIntervals <- outputList[[k]]$ConfInt
+        PredIntervals <- outputList[[k]]$PredInt
+        SY50Y <- outputList[[k]]$PredSY50
+        p <- 
+          ggplot2::`%+%`(p, list(
+            ggplot2::geom_ribbon(data = PredIntervals, 
+                                 ggplot2::aes(x = PredIntervals$x, 
+                                              y = PredIntervals$fit, 
+                                              ymin = PredIntervals$lwr, 
+                                              ymax = PredIntervals$upr), 
+                                 fill = I("red"), 
+                                 alpha = I(0.2)), 
+            ggplot2::geom_ribbon(data = ConfidIntervals, 
+                                 ggplot2::aes(x = ConfidIntervals$x, 
+                                              ymin = ConfidIntervals$lwr, 
+                                              ymax = ConfidIntervals$upr), 
+                                 fill = I("blue"), 
+                                 alpha = I(0.2)),  
+            ggplot2::geom_line(data = ConfidIntervals, 
                                ggplot2::aes(x = ConfidIntervals$x, 
-                                            ymin = ConfidIntervals$lwr, 
-                                            ymax = ConfidIntervals$upr), 
-                               fill = I("blue"), 
-                               alpha = I(0.2)),  
-          ggplot2::geom_line(data = ConfidIntervals, 
-                             ggplot2::aes(x = ConfidIntervals$x, 
-                                          y = ConfidIntervals$fit), 
-                             colour = I("blue"), 
-                             lwd = 1), 
-          ggplot2::geom_point(data = SyData, 
-                              ggplot2::aes(y = SyData$PercentVals, 
-                                           x = SyData$EnergyVals), 
-                              size = 3),   
-          ggplot2::geom_point(ggplot2::aes(x = SY50[1], 
-                                           y = SY50Y[1]), 
-                              col = "red", size = 3)
+                                            y = ConfidIntervals$fit), 
+                               colour = I("blue"), 
+                               lwd = 1), 
+            ggplot2::geom_point(data = SyData, 
+                                ggplot2::aes(y = SyData$PercentVals, 
+                                             x = SyData$EnergyVals), 
+                                size = 3),   
+            ggplot2::geom_point(ggplot2::aes(x = SY50[1], 
+                                             y = SY50Y[1]), 
+                                col = "red", size = 3)
           )
-        )
-  }
-  combinedPlot$gPlot <- p
-  combinedPlot$ApplyTheme()
-  combinedPlot$SavePlot(outputFolder)
+          )
+      }
+      combinedPlot$gPlot <- p
+      combinedPlot$ApplyTheme()
+      combinedPlot$SavePlot(outputFolder)
+  }, 
+  error = function(cond){
+    message("Error writing combined plot.")
+    message(rlang::last_error())
+  }, 
+  finally = {
+    message("plotting exited.")
+  })
 }
