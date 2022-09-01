@@ -5,6 +5,7 @@ writeSy50 <- function(outputList, fileNames, outputFolderPath){
     x$Sy50
   })
   names(extractedSYVals) <- fileNames
-  write.csv(extractedSYVals, file = "SY50Values")
+  write.csv(extractedSYVals, 
+            file = paste0(file.path(outputFolderPath, "Sy50ValuesData.csv")))
 }
 
