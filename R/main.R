@@ -2,6 +2,7 @@ source("./R/functions.R")
 source("./R/CombinedSYPlot.R")
 source("./R/writeSy50.R")
 source("./R/writeSYTables.R")
+source("./R/trimNames.R")
 
 main <- function(inputFolder, outputFolder, minMz, maxMz){
   
